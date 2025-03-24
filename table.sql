@@ -192,30 +192,7 @@ begin
     where i.status = 'returned' and i.return_date is not null;
 end;
 go
--- trigger không cho phép thêm thành viên có email đã tồn tại
-create trigger trg_check_duplicate_email
-on members
-after insert
-as
-begin
-    if exists (select 1 from members m join inserted i on m.email = i.email)
-    begin
-        raiserror ('email đã tồn tại, vui lòng sử dụng email khác.', 16, 1);
-        rollback transaction;
-        return;
-    end;
-    insert into members (member_id, name, email, phone, address)
-    select member_id, name, email, phone, address from inserted;
-end;
-go
 	
-insert into members (member_id, name, email, phone, address)
-values ('20', 'nguyen van a', 'jkhflaiushd@example.com', '0123456789', 'hanoi');
-
-insert into members (member_id, name, email, phone, address)
-values ('2', 'tran van b', 'abc@example.com', '0987654321', 'hochiminh');
-go
-
 -- thủ tục thêm sách mới
 create procedure add_new_book
     @book_id varchar(36),
